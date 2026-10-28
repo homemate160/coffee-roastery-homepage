@@ -756,6 +756,9 @@ body.menu-open { overflow: hidden; }
   var box = document.getElementById("qMsgBox"), sendBtn = document.getElementById("qSend");
   var count = document.getElementById("qCount");
   var DRAFT = "roastery-inquiry-draft";
+  var openedAt = Date.now();   /* 페이지를 연 시각 : 너무 빨리 보내는 봇을 거르는 데 씀 */
+  var lastSentAt = 0;          /* 마지막으로 보낸 시각 : 연달아 보내기 방지 */
+  var COOLDOWN = 30000;
 
   function say(text, kind) { box.textContent = text; box.className = "msg" + (kind ? " " + kind : ""); }
   function mark(el, bad) { el.classList.toggle("bad", bad); el.setAttribute("aria-invalid", String(bad)); }
@@ -789,6 +792,9 @@ body.menu-open { overflow: hidden; }
     if (problem) { say(problem, "err"); return; }
     if (f.bot.checked) return; /* 자동 등록 프로그램 차단 */
     if (!ENDPOINT) { say("지금은 시안이라 문의 접수 연결 전입니다. 아래 카카오톡이나 인스타그램으로 문의해 주세요.", "err"); return; }
+    if (sendBtn.disabled) return;
+    var wait = Math.ceil((lastSentAt + COOLDOWN - Date.now()) / 1000);
+    if (wait > 0) { say("방금 문의를 보내셨어요. " + wait + "초 뒤에 다시 보내 주세요.", "err"); return; }
 
     sendBtn.disabled = true; sendBtn.textContent = "보내는 중";
     say("");
@@ -798,18 +804,21 @@ body.menu-open { overflow: hidden; }
     body.append("phone", f.phone.value.trim());
     body.append("email", f.email.value.trim());
     body.append("message", f.msg.value.trim());
+    body.append("t", String(Date.now() - openedAt));
 
     fetch(ENDPOINT, { method: "POST", body: body })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok && j.ok, j: j }; }); })
       .then(function (res) {
         if (!res.ok) throw new Error((res.j && res.j.error) || "send failed");
+        lastSentAt = Date.now();
         try { localStorage.removeItem(DRAFT); } catch (e) {}
         form.reset(); count.textContent = "0";
         document.getElementById("qfields").hidden = true;
         document.getElementById("qDone").hidden = false;
       })
-      .catch(function () {
-        say("전송하지 못했습니다. 잠시 뒤 다시 시도하시거나 아래 카카오톡으로 문의해 주세요. 적으신 내용은 그대로 남아 있습니다.", "err");
+      .catch(function (err) {
+        if (err && err.message === "limit") say("지금 문의가 많이 몰려 있습니다. 잠시 뒤 다시 보내 주세요. 적으신 내용은 그대로 남아 있습니다.", "err");
+        else say("전송하지 못했습니다. 잠시 뒤 다시 시도하시거나 아래 카카오톡으로 문의해 주세요. 적으신 내용은 그대로 남아 있습니다.", "err");
       })
       .then(function () { sendBtn.disabled = false; sendBtn.textContent = "보내기"; });
   });

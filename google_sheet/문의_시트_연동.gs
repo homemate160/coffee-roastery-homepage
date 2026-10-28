@@ -17,6 +17,13 @@ var SHEET_NAME = '문의';
 
 var HEADERS = ['받은 시각', '성함', '연락처', '메일 주소', '문의 내용', '처리 상태', '메모'];
 
+/* 스팸 방지 기준 (숫자만 바꾸면 됩니다) */
+var MIN_FILL_SECONDS = 3;    // 페이지를 연 뒤 이 시간보다 빨리 보내면 봇으로 보고 버림
+var DUP_MINUTES = 10;        // 같은 사람이 같은 내용을 이 시간 안에 다시 보내면 한 번만 저장
+var PER_PERSON_LIMIT = 5;    // 같은 연락처나 메일로 6시간 동안 받을 수 있는 최대 건수
+var HOURLY_LIMIT = 40;       // 한 시간 동안 받을 수 있는 전체 최대 건수 (넘으면 잠시 뒤 다시 보내 달라고 안내)
+var HOURLY_MAIL_LIMIT = 5;   // 한 시간에 개별 알림 메일은 이 건수까지만. 넘으면 "몰리는 중" 메일 한 통만 보냄
+
 /** 홈페이지에서 보내기를 누르면 실행됩니다. */
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -37,12 +44,44 @@ function doPost(e) {
     var message = clip_(p.message, 2000);
     if (!name || !message || (!phone && !email)) return reply_({ ok: false, error: 'missing' });
 
+    // 페이지를 열자마자 보낸 것은 봇으로 보고 조용히 버립니다.
+    var elapsed = Number(p.t);
+    if (!(elapsed >= MIN_FILL_SECONDS * 1000)) return reply_({ ok: true });
+
+    var cache = CacheService.getScriptCache();
+    var hourKey = 'h_' + Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyyMMddHH');
+
+    // 한 시간 전체 한도
+    var hourCount = Number(cache.get(hourKey) || 0);
+    if (hourCount >= HOURLY_LIMIT) return reply_({ ok: false, error: 'limit' });
+
+    // 같은 사람이 같은 내용을 반복해서 보낸 경우 : 한 번만 저장하고 손님에게는 성공으로 안내
+    var who = (phone.replace(/[^0-9]/g, '') || '') + '|' + email.toLowerCase();
+    var dupKey = 'd_' + hash_(who + '|' + message.replace(/\s+/g, ' '));
+    if (cache.get(dupKey)) return reply_({ ok: true });
+
+    // 같은 사람 횟수 한도
+    var personKey = 'p_' + hash_(who);
+    var personCount = Number(cache.get(personKey) || 0);
+    if (personCount >= PER_PERSON_LIMIT) return reply_({ ok: false, error: 'limit' });
+
     var sheet = getSheet_();
     sheet.appendRow([new Date(), asText_(name), asText_(phone), asText_(email), asText_(message), '새 문의', '']);
 
-    // 메일 알림. 하루 메일 한도를 넘는 등 실패해도 시트 저장은 이미 끝났으므로 손님에게는 성공으로 알립니다.
+    cache.put(hourKey, String(hourCount + 1), 3600);
+    cache.put(dupKey, '1', DUP_MINUTES * 60);
+    cache.put(personKey, String(personCount + 1), 21600);
+
+    // 메일 알림. 실패해도 시트 저장은 이미 끝났으므로 손님에게는 성공으로 알립니다.
     try {
-      sendNotice_(name, phone, email, message);
+      var mailKey = 'm_' + hourKey;
+      var mailCount = Number(cache.get(mailKey) || 0);
+      if (mailCount < HOURLY_MAIL_LIMIT) {
+        sendNotice_(name, phone, email, message);
+      } else if (mailCount === HOURLY_MAIL_LIMIT) {
+        sendBurstNotice_();
+      }
+      cache.put(mailKey, String(mailCount + 1), 3600);
     } catch (mailErr) {
       console.error('메일 알림 실패 : ' + mailErr);
     }
@@ -99,6 +138,21 @@ function sendNotice_(name, phone, email, message) {
   var options = { name: '홈페이지 문의 알림' };
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) options.replyTo = email;
   MailApp.sendEmail(to, '[홈페이지 문의] ' + name.replace(/\s+/g, ' ') + ' 님', body, options);
+}
+
+// 문의가 한꺼번에 몰릴 때 개별 메일 대신 한 번만 보내는 알림
+function sendBurstNotice_() {
+  var to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
+  var sheetUrl = SpreadsheetApp.getActiveSpreadsheet().getUrl();
+  MailApp.sendEmail(to, '[홈페이지 문의] 문의가 몰리고 있습니다',
+    '지난 한 시간 동안 문의가 ' + HOURLY_MAIL_LIMIT + '건을 넘었습니다.\n' +
+    '메일함이 가득 차지 않도록 이번 시간에는 개별 알림을 멈춥니다. 문의는 시트에 계속 저장됩니다.\n\n' +
+    '시트에서 확인하기 : ' + sheetUrl + '\n', { name: '홈페이지 문의 알림' });
+}
+
+// 연락처나 내용을 짧은 열쇠 문자로 바꿉니다. (원문은 저장하지 않음)
+function hash_(s) {
+  return Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, s, Utilities.Charset.UTF_8));
 }
 
 // 앞뒤 공백을 지우고 길이를 제한합니다.
