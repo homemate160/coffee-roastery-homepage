@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="ko" data-theme="minimal">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>느린 불씨 로스터리 (가칭)</title>
+<meta name="description" content="한 번에 적은 양만 볶는 스몰 배치 커피 로스터리">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Hahmlet:wght@300;500;700&family=IBM+Plex+Sans+KR:wght@300;400;500&family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Pen+Script&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   시안 3종 : data-theme = minimal | craft | dark
+   글자와 색은 아래 변수만 바꾸면 전체에 반영됩니다.
+   ========================================================= */
+:root, [data-theme="minimal"] {
+  --bg: #f7f4ee;
+  --bg-2: #efeae1;
+  --ink: #1d1a17;
+  --ink-soft: #6f675e;
+  --line: #d9d1c4;
+  --accent: #8a4b2a;
+  --accent-ink: #f7f4ee;
+  --card: transparent;
+  --display: "Gowun Batang", serif;
+  --latin: "Instrument Serif", serif;
+  --body: "IBM Plex Sans KR", sans-serif;
+  --hand: "Instrument Serif", serif;
+  --radius: 0px;
+  --hero-size: clamp(2.2rem, 5.6vw, 4.6rem);
+}
+[data-theme="craft"] {
+  --bg: #d8c3a0;
+  --bg-2: #cdb48d;
+  --ink: #2c1d12;
+  --ink-soft: #5e4632;
+  --line: #8b6b4a;
+  --accent: #b5462a;
+  --accent-ink: #fbf3e4;
+  --card: #efe2c9;
+  --display: "Hahmlet", serif;
+  --latin: "Hahmlet", serif;
+  --body: "Gowun Dodum", sans-serif;
+  --hand: "Nanum Pen Script", cursive;
+  --radius: 6px;
+  --hero-size: clamp(2.1rem, 5.2vw, 4.2rem);
+}
+[data-theme="dark"] {
+  --bg: #12100e;
+  --bg-2: #1b1714;
+  --ink: #efe6d8;
+  --ink-soft: #a3978a;
+  --line: #3a322b;
+  --accent: #c8915a;
+  --accent-ink: #12100e;
+  --card: #1b1714;
+  --display: "Nanum Myeongjo", serif;
+  --latin: "Cormorant Garamond", serif;
+  --body: "IBM Plex Sans KR", sans-serif;
+  --hand: "Cormorant Garamond", serif;
+  --radius: 2px;
+  --hero-size: clamp(2.3rem, 6vw, 5rem);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-weight: 300;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .5s ease, color .5s ease;
+  overflow-x: hidden;
+}
+[data-theme="craft"] body { font-weight: 400; }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+
+/* 종이 질감 (공방 시안) */
+[data-theme="craft"] body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  opacity: .35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .2 0 0 0 0 .1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* 은은한 빛 (다크 시안) */
+[data-theme="dark"] body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  background: radial-gradient(60vw 50vh at 78% 18%, rgba(200,145,90,.16), transparent 70%);
+}
+main, header, footer { position: relative; z-index: 1; }
+
+.wrap { width: min(1160px, 100% - 32px); margin-inline: auto; }
+
+/* ---------- 시안 안내 띠 ---------- */
+.notice {
+  position: relative; z-index: 2;
+  background: var(--ink); color: var(--bg);
+  font-size: .78rem; text-align: center; padding: 7px 16px;
+  letter-spacing: .02em;
+}
+
+/* ---------- 머리글 ---------- */
+.site-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 26px 0;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; font-family: var(--display); font-weight: 700;
+  font-size: 1.12rem; letter-spacing: -.01em;
+}
+.logo small {
+  display: block; font-family: var(--latin); font-weight: 400;
+  font-size: .72rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ink-soft); line-height: 1.2;
+}
+.logo .mark { width: 30px; height: 30px; color: var(--accent); }
+.nav { display: flex; gap: 28px; font-size: .9rem; }
+.nav a { text-decoration: none; position: relative; padding: 4px 0; }
+.nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform .35s ease;
+}
+.nav a:hover::after { transform: scaleX(1); }
+
+/* ---------- 첫 화면 ---------- */
+.hero {
+  display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px;
+  align-items: center; padding: 64px 0 96px;
+}
+.eyebrow {
+  font-family: var(--latin); font-size: .85rem; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 22px;
+}
+[data-theme="craft"] .eyebrow {
+  font-family: var(--hand); font-size: 1.7rem; letter-spacing: 0; text-transform: none;
+}
+.hero h1 {
+  font-family: var(--display); font-weight: 400; font-size: var(--hero-size);
+  line-height: 1.28; letter-spacing: -.03em; margin: 0 0 28px; word-break: keep-all;
+}
+[data-theme="craft"] .hero h1 { font-weight: 700; }
+[data-theme="dark"] .hero h1 { font-weight: 800; }
+.hero h1 em {
+  font-style: normal; color: var(--accent);
+}
+[data-theme="minimal"] .hero h1 em { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.hero p.lead {
+  max-width: 30em; color: var(--ink-soft); font-size: 1.05rem; margin: 0 0 38px; word-break: keep-all;
+}
+.btns { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 26px; text-decoration: none; font-size: .95rem;
+  border: 1px solid var(--ink); border-radius: var(--radius);
+  transition: background-color .25s ease, color .25s ease, transform .25s ease;
+}
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn:hover { transform: translateY(-2px); }
+.btn.primary:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+[data-theme="dark"] .btn { border-color: var(--accent); }
+[data-theme="dark"] .btn.primary { background: var(--accent); color: var(--accent-ink); }
+[data-theme="craft"] .btn { border-width: 2px; box-shadow: 3px 3px 0 var(--ink); }
+[data-theme="craft"] .btn:hover { box-shadow: 5px 5px 0 var(--ink); }
+
+.hero-art { position: relative; aspect-ratio: 1; }
+.hero-art .bean-big {
+  position: absolute; inset: 10%; width: 80%; height: 80%;
+  color: var(--accent);
+  animation: float 9s ease-in-out infinite;
+}
+[data-theme="dark"] .hero-art .bean-big { filter: drop-shadow(0 30px 60px rgba(200,145,90,.25)); }
+.hero-art .ring {
+  position: absolute; inset: 0; border: 1px solid var(--line); border-radius: 50%;
+}
+[data-theme="craft"] .hero-art .ring { border: 2px dashed var(--line); border-radius: 46% 54% 50% 50%; }
+[data-theme="dark"] .hero-art .ring { border-color: rgba(200,145,90,.35); }
+.hero-art .stamp {
+  position: absolute; right: 2%; bottom: 6%;
+  width: 118px; height: 118px; border-radius: 50%;
+  display: grid; place-items: center; text-align: center;
+  background: var(--accent); color: var(--accent-ink);
+  font-family: var(--latin); font-size: .78rem; letter-spacing: .12em; line-height: 1.4;
+  transform: rotate(-12deg);
+}
+.hero-art .stamp b { display: block; font-family: var(--display); font-size: 1.05rem; letter-spacing: 0; }
+@keyframes float { 50% { transform: translateY(-14px) rotate(-3deg); } }
+
+/* 첫 화면 순차 등장 */
+.rise { opacity: 0; transform: translateY(18px); animation: rise .9s cubic-bezier(.2,.7,.2,1) forwards; }
+.d1 { animation-delay: .1s; } .d2 { animation-delay: .25s; } .d3 { animation-delay: .4s; } .d4 { animation-delay: .55s; }
+@keyframes rise { to { opacity: 1; transform: none; } }
+
+/* ---------- 공통 구역 ---------- */
+section { padding: 104px 0; }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 52px; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+[data-theme="craft"] .sec-head { border-bottom: 2px dashed var(--line); }
+.sec-head h2 {
+  font-family: var(--display); font-weight: 400; font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  letter-spacing: -.02em; margin: 0; line-height: 1.3;
+}
+[data-theme="craft"] .sec-head h2 { font-weight: 700; }
+[data-theme="dark"] .sec-head h2 { font-weight: 700; }
+.sec-head .num { font-family: var(--latin); color: var(--ink-soft); font-size: 1rem; letter-spacing: .12em; white-space: nowrap; }
+[data-theme="craft"] .sec-head .num { font-family: var(--hand); font-size: 1.5rem; letter-spacing: 0; color: var(--accent); }
+
+/* 사진 자리 */
+.photo {
+  position: relative; overflow: hidden; border-radius: var(--radius);
+  background:
+    repeating-linear-gradient(135deg, transparent 0 14px, color-mix(in srgb, var(--ink) 5%, transparent) 14px 15px),
+    var(--bg-2);
+  border: 1px solid var(--line);
+  display: flex; align-items: flex-end; min-height: 260px;
+}
+[data-theme="craft"] .photo { border: 2px solid var(--ink); background-color: var(--card); }
+.photo span {
+  margin: 14px; padding: 6px 12px; font-size: .78rem;
+  background: var(--bg); color: var(--ink-soft); border-radius: 99px; border: 1px solid var(--line);
+}
+
+/* ---------- 로스터의 말 ---------- */
+.story { display: grid; grid-template-columns: .9fr 1.1fr; gap: 64px; align-items: center; }
+.story .photo { aspect-ratio: 4 / 5; min-height: 0; }
+.story blockquote {
+  margin: 0 0 32px; font-family: var(--display); font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  line-height: 1.6; letter-spacing: -.02em; word-break: keep-all;
+}
+.story blockquote::before {
+  content: "“"; display: block; font-family: var(--latin); font-size: 4rem; line-height: .6;
+  color: var(--accent); margin-bottom: 10px;
+}
+.story p { color: var(--ink-soft); word-break: keep-all; max-width: 34em; }
+.sign { margin-top: 28px; font-family: var(--hand); font-size: 1.15rem; color: var(--ink); }
+[data-theme="craft"] .sign { font-size: 2rem; color: var(--accent); }
+[data-theme="minimal"] .sign, [data-theme="dark"] .sign { font-style: italic; }
+
+/* ---------- 로스팅의 색 ---------- */
+.roast { background: var(--bg-2); }
+[data-theme="craft"] .roast { background: transparent; }
+.roast-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.stage { text-align: center; }
+.stage .bean { width: 100%; max-width: 92px; margin: 0 auto 14px; aspect-ratio: 1; transition: transform .4s ease; }
+.stage:hover .bean { transform: rotate(-18deg) scale(1.08); }
+.stage b { display: block; font-family: var(--display); font-weight: 400; font-size: .98rem; }
+[data-theme="craft"] .stage b, [data-theme="dark"] .stage b { font-weight: 700; }
+.stage small { color: var(--ink-soft); font-size: .78rem; }
+.roast-line { height: 3px; margin: 30px 0 22px; border-radius: 3px;
+  background: linear-gradient(90deg, #9aa57a, #c9b27a, #b7864f, #8a5a34, #6b4026, #4e2d1b, #2e1a10); }
+.roast-note { max-width: 40em; color: var(--ink-soft); word-break: keep-all; margin: 0; }
+
+/* ---------- 원두 ---------- */
+.beans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.bean-card {
+  position: relative; padding: 28px 24px 26px; border-radius: var(--radius);
+  background: var(--card); border: 1px solid var(--line);
+  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+.bean-card:hover { transform: translateY(-6px); border-color: var(--accent); }
+[data-theme="minimal"] .bean-card { border-width: 0 0 0 1px; padding-top: 6px; }
+[data-theme="minimal"] .bean-card:hover { transform: none; }
+[data-theme="craft"] .bean-card { border: 2px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+[data-theme="craft"] .bean-card:nth-child(odd) { transform: rotate(-1deg); }
+[data-theme="craft"] .bean-card:nth-child(even) { transform: rotate(.8deg); }
+[data-theme="craft"] .bean-card:hover { transform: rotate(0) translateY(-6px); box-shadow: 7px 7px 0 var(--ink); }
+[data-theme="dark"] .bean-card:hover { box-shadow: 0 18px 50px rgba(200,145,90,.12); }
+.bean-card .origin { font-family: var(--latin); font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+[data-theme="craft"] .bean-card .origin { font-family: var(--hand); font-size: 1.35rem; letter-spacing: 0; text-transform: none; }
+.bean-card h3 { font-family: var(--display); font-weight: 400; font-size: 1.32rem; margin: 6px 0 18px; line-height: 1.35; word-break: keep-all; }
+[data-theme="craft"] .bean-card h3, [data-theme="dark"] .bean-card h3 { font-weight: 700; }
+.level { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.level i { width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--ink-soft); }
+.level i.on { background: var(--ink); border-color: var(--ink); }
+[data-theme="dark"] .level i.on { background: var(--accent); border-color: var(--accent); }
+.level-label { font-size: .8rem; color: var(--ink-soft); margin-bottom: 18px; }
+.notes { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; padding: 0; list-style: none; }
+.notes li { font-size: .8rem; padding: 3px 11px; border: 1px solid var(--line); border-radius: 99px; }
+[data-theme="craft"] .notes li { border-color: var(--ink-soft); background: var(--bg); }
+.brew { font-size: .82rem; color: var(--ink-soft); border-top: 1px solid var(--line); padding-top: 12px; margin: 0; }
+
+/* ---------- 과정 ---------- */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.step .photo { aspect-ratio: 1; min-height: 0; margin-bottom: 22px; }
+.step .no { font-family: var(--latin); font-size: 2.6rem; line-height: 1; color: var(--accent); }
+[data-theme="craft"] .step .no { font-family: var(--hand); font-size: 3rem; }
+[data-theme="minimal"] .step .no { font-style: italic; }
+.step h3 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; margin: 8px 0 8px; }
+[data-theme="craft"] .step h3, [data-theme="dark"] .step h3 { font-weight: 700; }
+.step p { color: var(--ink-soft); margin: 0; word-break: keep-all; }
+
+/* ---------- 연락 ---------- */
+.contact { text-align: center; }
+.contact h2 {
+  font-family: var(--display); font-weight: 400; font-size: clamp(1.8rem, 4.4vw, 3.2rem);
+  letter-spacing: -.03em; line-height: 1.35; margin: 0 0 18px; word-break: keep-all;
+}
+[data-theme="craft"] .contact h2, [data-theme="dark"] .contact h2 { font-weight: 700; }
+.contact p { color: var(--ink-soft); margin: 0 auto 36px; max-width: 32em; word-break: keep-all; }
+.contact .btns { justify-content: center; }
+
+/* ---------- 바닥글 ---------- */
+.site-foot { border-top: 1px solid var(--line); padding: 36px 0 120px; font-size: .8rem; color: var(--ink-soft); }
+.site-foot .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; }
+.site-foot dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; margin: 0; }
+.site-foot dt { color: var(--ink); }
+.site-foot dd { margin: 0; }
+
+/* ---------- 시안 전환 버튼 ---------- */
+.switcher {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 50;
+  display: flex; gap: 4px; padding: 5px;
+  background: rgba(20,17,15,.88); backdrop-filter: blur(8px);
+  border-radius: 99px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  font-family: "IBM Plex Sans KR", sans-serif;
+}
+.switcher button {
+  border: 0; background: transparent; color: #d8cfc3; cursor: pointer;
+  font: inherit; font-size: .84rem; padding: 9px 16px; border-radius: 99px; white-space: nowrap;
+  transition: background-color .25s ease, color .25s ease;
+}
+.switcher button[aria-pressed="true"] { background: #f7f4ee; color: #1d1a17; }
+
+/* 스크롤 등장 */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ---------- 반응형 ---------- */
+@media (max-width: 960px) {
+  .beans { grid-template-columns: repeat(2, 1fr); }
+  .roast-strip { grid-template-columns: repeat(4, 1fr); row-gap: 26px; }
+}
+@media (max-width: 760px) {
+  .nav { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 32px 0 72px; gap: 20px; }
+  .hero-art { max-width: 300px; margin: 0 auto; order: -1; width: 100%; }
+  .hero-art .stamp { width: 92px; height: 92px; font-size: .66rem; }
+  .story { grid-template-columns: 1fr; gap: 36px; }
+  .story .photo { aspect-ratio: 4 / 3; }
+  .steps { grid-template-columns: 1fr; }
+  .step .photo { aspect-ratio: 4 / 3; }
+  section { padding: 72px 0; }
+  .sec-head { flex-direction: column; gap: 4px; }
+  .switcher button { padding: 8px 11px; font-size: .78rem; }
+}
+@media (max-width: 480px) {
+  .beans { grid-template-columns: 1fr; }
+  .roast-strip { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .stage small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .rise, .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- 커피콩 그림 (여러 곳에서 다시 씀) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bean" viewBox="0 0 100 100">
+      <ellipse cx="50" cy="50" rx="31" ry="43" transform="rotate(28 50 50)" fill="currentColor"/>
+      <path d="M38 14 C 62 34, 36 62, 62 86" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="40" cy="34" rx="7" ry="13" transform="rotate(28 40 34)" fill="rgba(255,255,255,.14)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="notice">시안 미리보기 : 브랜드 이름, 문구, 원두 정보, 사진은 모두 임시입니다.</div>
+
+<header class="wrap site-head">
+  <a class="logo" href="#top">
+    <svg class="mark" aria-hidden="true"><use href="#bean"/></svg>
+    <span>느린 불씨 로스터리<small>Slow Ember Roasters</small></span>
+  </a>
+  <nav class="nav" aria-label="주요 메뉴">
+    <a href="#story">이야기</a>
+    <a href="#roast">로스팅</a>
+    <a href="#beans">원두</a>
+    <a href="#contact">연락</a>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- 첫 화면 -->
+  <div class="wrap hero">
+    <div>
+      <p class="eyebrow rise d1">Small Batch Coffee Roaster</p>
+      <h1 class="rise d2">콩이 제 맛을 낼 때까지<br><em>불 앞</em>을 떠나지 않습니다.</h1>
+      <p class="lead rise d3">한 번에 적은 양만 볶습니다. 같은 원두라도 그날의 습도와 콩의 상태를 살피고, 불의 세기를 매번 다시 정합니다.</p>
+      <div class="btns rise d4">
+        <a class="btn primary" href="#beans">지금 볶는 원두</a>
+        <a class="btn" href="#story">로스터 이야기</a>
+      </div>
+    </div>
+    <div class="hero-art rise d3" aria-hidden="true">
+      <div class="ring"></div>
+      <svg class="bean-big"><use href="#bean"/></svg>
+      <div class="stamp"><span><b>소량 로스팅</b>SMALL<br>BATCH</span></div>
+    </div>
+  </div>
+
+  <!-- 로스터의 말 -->
+  <section id="story">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>로스터의 말</h2><span class="num">01 Story</span></div>
+      <div class="story">
+        <div class="photo reveal"><span>사진 자리 : 로스팅 기계 앞에 선 로스터</span></div>
+        <div class="reveal">
+          <blockquote>매일 같은 원두를 볶아도 매일 조금씩 다릅니다. 그 작은 차이를 알아채는 일이 제 일입니다.</blockquote>
+          <p>커피 맛의 많은 부분은 볶는 순간에 정해집니다. 몇 초 일찍 불을 끄면 산뜻해지고, 몇 초 늦으면 묵직해집니다. 그래서 기계에 맡겨 두지 않고, 콩의 색과 소리와 향을 직접 확인하며 볶습니다.</p>
+          <p>이곳의 원두는 많지 않습니다. 대신 하나하나가 왜 이 맛인지 설명할 수 있는 원두만 내놓습니다.</p>
+          <p class="sign">로스터 ○○○ 드림</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 로스팅의 색 -->
+  <section id="roast" class="roast">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>생두에서 원두까지</h2><span class="num">02 Roast</span></div>
+      <div class="roast-strip reveal">
+        <div class="stage"><svg class="bean" style="color:#9aa57a"><use href="#bean"/></svg><b>생두</b><small>초록빛 날콩</small></div>
+        <div class="stage"><svg class="bean" style="color:#c9b27a"><use href="#bean"/></svg><b>건조</b><small>수분이 빠짐</small></div>
+        <div class="stage"><svg class="bean" style="color:#b7864f"><use href="#bean"/></svg><b>갈변</b><small>단맛이 생김</small></div>
+        <div class="stage"><svg class="bean" style="color:#8a5a34"><use href="#bean"/></svg><b>1차 팝</b><small>콩이 터지는 소리</small></div>
+        <div class="stage"><svg class="bean" style="color:#6b4026"><use href="#bean"/></svg><b>시티</b><small>균형 잡힌 맛</small></div>
+        <div class="stage"><svg class="bean" style="color:#4e2d1b"><use href="#bean"/></svg><b>풀시티</b><small>깊은 쓴맛</small></div>
+        <div class="stage"><svg class="bean" style="color:#2e1a10"><use href="#bean"/></svg><b>2차 팝</b><small>스모키한 향</small></div>
+      </div>
+      <div class="roast-line reveal"></div>
+      <p class="roast-note reveal">생두는 초록빛에서 시작해 점점 짙은 갈색이 됩니다. 어느 지점에서 불을 멈추느냐가 그 원두의 성격을 정합니다. 아래 원두마다 어디쯤에서 멈췄는지 함께 적어 두었습니다.</p>
+    </div>
+  </section>
+
+  <!-- 원두 -->
+  <section id="beans">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>지금 볶는 원두</h2><span class="num">03 Beans</span></div>
+      <div class="beans">
+        <article class="bean-card reveal">
+          <div class="origin">Ethiopia</div>
+          <h3>에티오피아 예가체프</h3>
+          <div class="level" aria-label="로스팅 정도 5단계 중 2"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+          <div class="level-label">약배전</div>
+          <ul class="notes"><li>자스민</li><li>레몬</li><li>홍차</li></ul>
+          <p class="brew">추천 : 핸드드립</p>
+        </article>
+        <article class="bean-card reveal">
+          <div class="origin">Colombia</div>
+          <h3>콜롬비아 수프리모</h3>
+          <div class="level" aria-label="로스팅 정도 5단계 중 3"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+          <div class="level-label">중배전</div>
+          <ul class="notes"><li>밀크초콜릿</li><li>견과</li><li>캐러멜</li></ul>
+          <p class="brew">추천 : 핸드드립, 모카포트</p>
+        </article>
+        <article class="bean-card reveal">
+          <div class="origin">Guatemala</div>
+          <h3>과테말라 안티구아</h3>
+          <div class="level" aria-label="로스팅 정도 5단계 중 4"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+          <div class="level-label">중강배전</div>
+          <ul class="notes"><li>다크초콜릿</li><li>흑설탕</li><li>스모키</li></ul>
+          <p class="brew">추천 : 에스프레소, 라떼</p>
+        </article>
+        <article class="bean-card reveal">
+          <div class="origin">House Blend</div>
+          <h3>느린 불씨 블렌드</h3>
+          <div class="level" aria-label="로스팅 정도 5단계 중 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+          <div class="level-label">강배전</div>
+          <ul class="notes"><li>카카오</li><li>구운 곡물</li><li>묵직한 단맛</li></ul>
+          <p class="brew">추천 : 에스프레소, 라떼</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 과정 -->
+  <section id="process">
+    <div class="wrap">
+      <div class="sec-head reveal"><h2>한 봉지가 나오기까지</h2><span class="num">04 Process</span></div>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="photo"><span>사진 자리 : 생두를 고르는 손</span></div>
+          <div class="no">01</div>
+          <h3>고르기</h3>
+          <p>생두가 들어오면 먼저 눈으로 고릅니다. 깨지거나 색이 다른 콩은 손으로 골라냅니다.</p>
+        </div>
+        <div class="step reveal">
+          <div class="photo"><span>사진 자리 : 로스터기 창 너머의 콩</span></div>
+          <div class="no">02</div>
+          <h3>볶기</h3>
+          <p>온도와 시간, 콩이 터지는 소리를 확인하며 원두마다 정한 지점에서 불을 멈춥니다.</p>
+        </div>
+        <div class="step reveal">
+          <div class="photo"><span>사진 자리 : 커핑 스푼과 잔</span></div>
+          <div class="no">03</div>
+          <h3>맛보기</h3>
+          <p>볶은 원두는 며칠 쉬게 한 뒤 직접 내려 맛을 확인하고 나서야 내보냅니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 연락 -->
+  <section id="contact" class="contact">
+    <div class="wrap reveal">
+      <h2>원두가 궁금하시다면<br>편하게 말을 걸어 주세요.</h2>
+      <p>원두 구매, 카페와 사무실 납품, 로스팅에 대한 질문 모두 반갑습니다.</p>
+      <div class="btns">
+        <a class="btn primary" href="#contact">카카오톡 채널 (준비 중)</a>
+        <a class="btn" href="#contact">인스타그램</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <dl>
+      <dt>상호</dt><dd>느린 불씨 로스터리 (가칭)</dd>
+      <dt>대표</dt><dd>○○○</dd>
+      <dt>사업자등록번호</dt><dd>000-00-00000</dd>
+      <dt>주소</dt><dd>○○시 ○○구 ○○로 00</dd>
+    </dl>
+    <div>© 느린 불씨 로스터리</div>
+  </div>
+</footer>
+
+<div class="switcher" role="group" aria-label="시안 바꾸기">
+  <button type="button" data-set="minimal">A 미니멀</button>
+  <button type="button" data-set="craft">B 따뜻한 공방</button>
+  <button type="button" data-set="dark">C 묵직한 다크</button>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var KEY = "roastery-theme";
+  var buttons = document.querySelectorAll(".switcher button");
+
+  function apply(name) {
+    root.setAttribute("data-theme", name);
+    buttons.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.set === name)); });
+    try { localStorage.setItem(KEY, name); } catch (e) {}
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  apply(saved === "craft" || saved === "dark" ? saved : "minimal");
+
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () { apply(b.dataset.set); });
+  });
+
+  // 스크롤하면 부드럽게 나타나기
+  var items = document.querySelectorAll(".reveal");
+  if (!("IntersectionObserver" in window)) {
+    items.forEach(function (el) { el.classList.add("in"); });
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.12 });
+  items.forEach(function (el, i) {
+    el.style.transitionDelay = (i % 4) * 80 + "ms";
+    io.observe(el);
+  });
+})();
+</script>
+</body>
+</html>
