@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>느린 불씨 저널 (가칭)</title>
+<meta name="description" content="스몰 배치 커피 로스터리 느린 불씨가 펴내는 읽는 홈페이지">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+/* FOLIODEX No.006 에디토리얼 규칙 : 바탕, 잉크, 강조, 괘선 네 가지 색과 모서리 0 */
+:root {
+  --paper: #FAF7F0;
+  --ink: #191713;
+  --ink-2: #5b554b;
+  --accent: #8C2F1B;
+  --rule: #D9D2C3;
+  --serif: "Noto Serif KR", "Nanum Myeongjo", serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --italic: "Cormorant Garamond", serif;
+}
+*, *::before, *::after { box-sizing: border-box; border-radius: 0; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--serif); font-size: 16.5px; line-height: 1.85; font-weight: 400;
+  word-break: keep-all; overflow-wrap: break-word; -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+.page { width: min(1180px, 100% - 32px); margin-inline: auto; }
+
+/* 사진 톤 통일 */
+.photo img { width: 100%; height: 100%; object-fit: cover; filter: sepia(.14) saturate(.88) contrast(1.03); }
+figcaption { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); letter-spacing: .02em; margin-top: 10px; line-height: 1.6; }
+figcaption b { color: var(--accent); font-weight: 500; }
+
+/* 작은 글자 장치 */
+.label { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.mono { font-family: var(--mono); }
+
+/* ---------- 시안 안내 ---------- */
+.notice { font-family: var(--mono); font-size: 11.5px; text-align: center; padding: 8px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); }
+
+/* ---------- 제호 (잡지 이름) ---------- */
+.masthead { padding: 26px 0 0; }
+.mast-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; color: var(--ink-2); }
+.mast-top nav { display: flex; gap: 22px; }
+.mast-top nav a { text-decoration: none; }
+.mast-top nav a:hover { color: var(--accent); }
+.mast-title {
+  margin: 18px 0 0; padding: 14px 0 12px; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+}
+.mast-title h1 { margin: 0; font-weight: 900; font-size: clamp(54px, 10.5vw, 148px); line-height: .95; letter-spacing: -.06em; }
+.mast-title h1 span { color: var(--accent); }
+.mast-title .issue { text-align: right; font-family: var(--mono); font-size: 12px; line-height: 1.7; color: var(--ink-2); }
+.mast-title .issue strong { display: block; font-family: var(--italic); font-style: italic; font-weight: 500; font-size: 26px; color: var(--ink); letter-spacing: 0; }
+.mast-sub { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+
+/* ---------- 러닝헤드 (각 구역 머리) ---------- */
+.runhead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--ink); padding-bottom: 8px; margin-bottom: clamp(30px, 4vw, 48px); font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; color: var(--ink-2); }
+.runhead .sec { color: var(--ink); }
+.runhead .folio { color: var(--accent); }
+section { padding: clamp(64px, 8vw, 110px) 0 0; }
+
+/* ---------- 커버 스토리 ---------- */
+.cover { display: grid; grid-template-columns: 1.55fr 1fr; gap: clamp(24px, 3.4vw, 48px); padding-top: 34px; }
+.cover .photo { height: min(76vh, 720px); }
+.cover-copy { display: flex; flex-direction: column; justify-content: space-between; border-top: 1px solid var(--ink); padding-top: 18px; }
+.cover-copy h2 { margin: 14px 0 20px; font-weight: 900; font-size: clamp(38px, 4.6vw, 64px); line-height: 1.16; letter-spacing: -.05em; }
+.cover-copy .deck { font-size: clamp(17px, 1.5vw, 19.5px); line-height: 1.75; color: var(--ink-2); margin: 0 0 22px; }
+.byline { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); border-top: 1px solid var(--rule); padding-top: 12px; line-height: 1.8; }
+.contents { margin-top: 30px; }
+.contents h3 { margin: 0 0 8px; font-family: var(--mono); font-weight: 500; font-size: 11.5px; letter-spacing: .14em; color: var(--accent); }
+.contents ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.contents li a { display: grid; grid-template-columns: 34px 1fr auto; gap: 8px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); text-decoration: none; font-size: 15.5px; transition: color .2s, padding-left .25s; }
+.contents li a:hover { color: var(--accent); padding-left: 6px; }
+.contents .n, .contents .p { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+
+/* ---------- 본문 기사 ---------- */
+.article-head { display: grid; grid-template-columns: 1fr 2fr; gap: clamp(24px, 4vw, 60px); margin-bottom: clamp(30px, 4vw, 50px); }
+.article-head h2 { margin: 0; font-weight: 900; font-size: clamp(34px, 4.4vw, 58px); line-height: 1.15; letter-spacing: -.05em; }
+.article-head .deck { margin: 6px 0 0; font-size: clamp(17px, 1.5vw, 20px); line-height: 1.75; color: var(--ink-2); border-left: 0; }
+.columns { column-count: 3; column-gap: 34px; column-rule: 1px solid var(--rule); }
+.columns p { margin: 0 0 1.1em; }
+.columns .dropcap::first-letter {
+  float: left; font-weight: 900; font-size: 4.6em; line-height: .86; margin: .06em .1em 0 0; color: var(--accent);
+}
+.pull {
+  column-span: all; margin: 34px 0 38px; padding: 26px 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink);
+  display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start;
+}
+.pull .mark { font-family: var(--italic); font-style: italic; font-size: 96px; line-height: .7; color: var(--accent); }
+.pull blockquote { margin: 0; font-weight: 700; font-size: clamp(24px, 3vw, 38px); line-height: 1.45; letter-spacing: -.04em; }
+.pull cite { display: block; margin-top: 12px; font-style: normal; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); font-weight: 400; letter-spacing: .04em; }
+.sign { font-weight: 700; font-size: 18px; text-align: right; }
+
+/* ---------- 도판 : 로스팅 단계 ---------- */
+.figure-roast { display: grid; grid-template-columns: 1fr 2.2fr; gap: clamp(24px, 4vw, 60px); }
+.figure-roast h2 { margin: 0 0 16px; font-weight: 900; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.2; letter-spacing: -.05em; }
+.figure-roast p.side { margin: 0; color: var(--ink-2); font-size: 15.5px; }
+.chips { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.chip { appearance: none; background: none; border: 0; border-right: 1px solid var(--rule); padding: 0 0 12px; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.chip:last-child { border-right: 0; }
+.chip .sw { display: block; height: clamp(110px, 13vw, 170px); transition: height .4s ease; }
+.chip .no { display: block; font-family: var(--mono); font-size: 11px; color: var(--ink-2); margin: 10px 10px 0; }
+.chip .nm { display: block; font-weight: 700; font-size: 15px; margin: 0 10px; }
+.chip[aria-pressed="true"] .sw { height: clamp(130px, 15vw, 196px); }
+.chip[aria-pressed="true"] .nm { color: var(--accent); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.chip-cap { display: grid; grid-template-columns: auto 1fr; gap: 16px; padding: 16px 0 0; min-height: 84px; }
+.chip-cap .big { font-weight: 900; font-size: 28px; letter-spacing: -.04em; line-height: 1.2; }
+.chip-cap p { margin: 0; color: var(--ink-2); font-size: 15.5px; }
+.chip-cap p b { color: var(--accent); font-weight: 600; }
+
+/* ---------- 원두 (시음 노트) ---------- */
+.beans { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--ink); }
+.bean { padding: 22px 20px 26px; border-right: 1px solid var(--rule); }
+.bean:first-child { padding-left: 0; }
+.bean:last-child { border-right: 0; padding-right: 0; }
+.bean .photo { aspect-ratio: 4 / 5; overflow: hidden; }
+.bean .photo img { transition: transform 1s cubic-bezier(.2,.7,.2,1); }
+.bean:hover .photo img { transform: scale(1.05); }
+.bean .no { font-family: var(--mono); font-size: 11.5px; color: var(--accent); margin: 16px 0 2px; letter-spacing: .1em; }
+.bean h3 { margin: 0 0 4px; font-weight: 900; font-size: 22px; line-height: 1.3; letter-spacing: -.04em; }
+.bean .origin { font-family: var(--italic); font-style: italic; font-size: 18px; color: var(--ink-2); margin: 0 0 14px; }
+.bean dl { margin: 0; font-size: 14.5px; }
+.bean dl div { display: grid; grid-template-columns: 52px 1fr; gap: 8px; padding: 7px 0; border-top: 1px solid var(--rule); }
+.bean dt { font-family: var(--mono); font-size: 11px; color: var(--ink-2); padding-top: 3px; }
+.bean dd { margin: 0; }
+.scale { display: inline-flex; gap: 3px; vertical-align: middle; margin-right: 6px; }
+.scale i { width: 14px; height: 6px; background: var(--rule); }
+.scale i.on { background: var(--ink); }
+.bean .note { margin: 14px 0 0; font-size: 14.5px; color: var(--ink-2); font-style: normal; line-height: 1.75; }
+
+/* ---------- 사진 에세이 ---------- */
+.essay { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(18px, 2.4vw, 30px); align-items: start; }
+.essay figure { margin: 0; }
+.essay .e1 { grid-column: 1 / 8; }
+.essay .e1 .photo { aspect-ratio: 4 / 3; }
+.essay .e2 { grid-column: 8 / 13; margin-top: clamp(60px, 10vw, 140px); }
+.essay .e2 .photo { aspect-ratio: 3 / 4; }
+.essay .e3 { grid-column: 3 / 10; }
+.essay .e3 .photo { aspect-ratio: 16 / 9; }
+.essay .txt { grid-column: 10 / 13; align-self: end; border-top: 1px solid var(--ink); padding-top: 14px; }
+.essay .txt h3 { margin: 0 0 10px; font-weight: 900; font-size: 24px; letter-spacing: -.04em; line-height: 1.3; }
+.essay .txt p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.essay .photo { overflow: hidden; }
+
+/* ---------- 문답 ---------- */
+.qa { display: grid; grid-template-columns: 1fr 2fr; gap: clamp(24px, 4vw, 60px); }
+.qa h2 { margin: 0; font-weight: 900; font-size: clamp(32px, 3.8vw, 50px); line-height: 1.2; letter-spacing: -.05em; }
+.qa .who { margin-top: 18px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+.qa dl { margin: 0; border-top: 1px solid var(--ink); }
+.qa dt { font-weight: 700; font-size: 18.5px; padding: 20px 0 6px; letter-spacing: -.02em; }
+.qa dt::before { content: "Q. "; color: var(--accent); }
+.qa dd { margin: 0; padding: 0 0 20px; border-bottom: 1px solid var(--rule); color: var(--ink-2); }
+.qa dd::before { content: "A. "; font-weight: 700; color: var(--ink); }
+
+/* ---------- 구독 안내 같은 연락 상자 ---------- */
+.contact { margin-top: clamp(64px, 8vw, 110px); border: 1px solid var(--ink); padding: clamp(28px, 4vw, 52px); display: grid; grid-template-columns: 1.4fr 1fr; gap: 30px; align-items: end; position: relative; }
+.contact::before { content: ""; position: absolute; inset: 6px; border: 1px solid var(--rule); pointer-events: none; }
+.contact h2 { margin: 8px 0 12px; font-weight: 900; font-size: clamp(30px, 3.6vw, 46px); line-height: 1.2; letter-spacing: -.05em; }
+.contact p { margin: 0; color: var(--ink-2); }
+.contact .links { display: grid; gap: 10px; position: relative; }
+.contact .links a { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; text-decoration: none; border: 1px solid var(--ink); font-size: 15.5px; transition: background-color .2s, color .2s; }
+.contact .links a:first-child { background: var(--ink); color: var(--paper); }
+.contact .links a:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+
+/* ---------- 판권 (바닥글) ---------- */
+.colophon { margin-top: clamp(64px, 8vw, 110px); border-top: 3px solid var(--ink); padding: 18px 0 50px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; font-family: var(--mono); font-size: 11.5px; line-height: 1.9; color: var(--ink-2); }
+.colophon h4 { margin: 0 0 6px; color: var(--ink); font-weight: 500; letter-spacing: .12em; }
+.colophon p { margin: 0; }
+
+/* 나타나기 (차분하게) */
+.rv { opacity: 0; transform: translateY(16px); transition: opacity .9s ease, transform .9s ease; }
+.rv.in { opacity: 1; transform: none; }
+
+/* ---------- 반응형 ---------- */
+@media (max-width: 1000px) {
+  .columns { column-count: 2; }
+  .beans { grid-template-columns: repeat(2, 1fr); }
+  .bean:nth-child(2) { border-right: 0; padding-right: 0; }
+  .bean:nth-child(3) { padding-left: 0; }
+  .bean:nth-child(n+3) { border-top: 1px solid var(--rule); }
+}
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  .mast-top nav { display: none; }
+  .mast-title .issue { text-align: left; }
+  .mast-sub span:last-child { display: none; }
+  .cover, .article-head, .figure-roast, .qa, .contact { grid-template-columns: 1fr; }
+  .cover .photo { height: 62vh; }
+  .columns { column-count: 1; }
+  .pull { grid-template-columns: 1fr; gap: 0; }
+  .pull .mark { font-size: 70px; }
+  .chips { grid-template-columns: repeat(7, 1fr); }
+  .chip .nm { font-size: 12px; margin: 0 4px; }
+  .chip .no { margin: 8px 4px 0; }
+  .chip .sw { height: 80px; }
+  .chip[aria-pressed="true"] .sw { height: 96px; }
+  .essay { grid-template-columns: 1fr; }
+  .essay .e1, .essay .e2, .essay .e3, .essay .txt { grid-column: 1; margin-top: 0; }
+  .colophon { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .beans { grid-template-columns: 1fr; }
+  .bean, .bean:nth-child(n) { padding: 22px 0 26px; border-right: 0; }
+  .bean + .bean { border-top: 1px solid var(--rule); }
+  .chip .no { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .rv { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="notice">시안 미리보기 : 이름, 문구, 원두 정보, 문답 내용은 임시이며 사진은 Unsplash 무료 사진입니다.</div>
+
+<header class="page masthead">
+  <div class="mast-top">
+    <span>SLOW EMBER ROASTERS</span>
+    <nav aria-label="주요 메뉴">
+      <a href="#story">로스터의 말</a>
+      <a href="#roast">로스팅</a>
+      <a href="#beans">원두</a>
+      <a href="#process">과정</a>
+      <a href="#contact">연락</a>
+    </nav>
+  </div>
+  <div class="mast-title">
+    <h1>느린 불씨<span>.</span></h1>
+    <div class="issue"><strong>Journal</strong>Issue No. 01<br>2026 가을호</div>
+  </div>
+  <div class="mast-sub"><span>스몰 배치 커피 로스터리가 펴내는 읽는 홈페이지</span><span>Vol. 1 / 10 pages</span></div>
+</header>
+
+<main class="page">
+
+  <!-- 커버 스토리 -->
+  <div class="cover">
+    <figure class="photo rv" style="margin:0">
+      <img src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?auto=format&fit=crop&w=1800&q=80" alt="로스터기에 원두를 붓는 손">
+    </figure>
+    <div class="cover-copy rv">
+      <div>
+        <span class="label">Cover Story</span>
+        <h2>불을<br>멈추는<br>일에 대하여</h2>
+        <p class="deck">로스팅은 몇 초의 차이로 맛이 달라지는 일입니다. 매일 같은 원두를 볶으면서도 매일 다시 배우는 한 로스터의 기록을 펼칩니다.</p>
+        <div class="byline">글 : 로스터 ○○○<br>사진 : Unsplash (임시)</div>
+      </div>
+      <nav class="contents" aria-label="이번 호 차례">
+        <h3>CONTENTS</h3>
+        <ol>
+          <li><a href="#story"><span class="n">01</span><span>로스터의 말</span><span class="p">p.02</span></a></li>
+          <li><a href="#roast"><span class="n">02</span><span>생두에서 원두까지</span><span class="p">p.04</span></a></li>
+          <li><a href="#beans"><span class="n">03</span><span>지금 볶는 원두</span><span class="p">p.06</span></a></li>
+          <li><a href="#process"><span class="n">04</span><span>한 봉지가 나오기까지</span><span class="p">p.08</span></a></li>
+          <li><a href="#contact"><span class="n">05</span><span>로스터에게 묻다</span><span class="p">p.10</span></a></li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- 01 로스터의 말 -->
+  <section id="story">
+    <div class="runhead"><span>느린 불씨 저널</span><span class="sec">01 로스터의 말</span><span class="folio">p.02</span></div>
+    <div class="article-head rv">
+      <h2>매일 같은 원두,<br>매일 다른 불.</h2>
+      <p class="deck">좋은 커피는 화려한 기술보다 작은 차이를 알아채는 눈에서 나온다고 믿습니다. 그 눈을 기르는 일에 대해 적었습니다.</p>
+    </div>
+    <div class="columns rv">
+      <p class="dropcap">아침에 로스터기를 예열하면서 가장 먼저 하는 일은 그날의 공기를 살피는 것입니다. 습도가 높은 날은 콩이 수분을 머금고 있어 불이 천천히 스며들고, 건조한 날은 같은 불에도 색이 빨리 올라옵니다. 레시피는 있지만, 레시피만 믿고 볶은 적은 없습니다.</p>
+      <p>생두 한 자루에도 콩마다 크기와 밀도가 조금씩 다릅니다. 그래서 볶기 전에 먼저 고릅니다. 깨진 콩, 벌레 먹은 콩, 유난히 색이 다른 콩을 손으로 골라내는 시간은 지루하지만, 그 지루함이 한 잔의 맑음을 만듭니다.</p>
+      <p>로스팅이 시작되면 눈과 귀와 코가 모두 바빠집니다. 콩은 초록에서 노랑으로, 노랑에서 갈색으로 변하고, 어느 순간 탁탁 터지는 소리를 냅니다. 그 소리를 듣고 몇 초를 더 기다릴지, 지금 멈출지를 정하는 것이 이 일의 거의 전부입니다.</p>
+      <div class="pull">
+        <span class="mark" aria-hidden="true">“</span>
+        <div>
+          <blockquote>몇 초 일찍 멈추면 산뜻해지고, 몇 초 늦으면 묵직해집니다. 그 몇 초를 정하는 것이 제 일입니다.</blockquote>
+          <cite>로스터 ○○○, 작업실에서</cite>
+        </div>
+      </div>
+      <p>그래서 이곳의 원두는 많지 않습니다. 많이 볶으면 하나하나를 지켜볼 수 없기 때문입니다. 대신 내놓는 원두마다 왜 이 맛인지, 어디서 불을 멈췄는지 설명할 수 있도록 기록합니다.</p>
+      <p>볶은 원두는 바로 보내지 않습니다. 며칠 쉬게 하며 가스가 빠지기를 기다린 뒤, 직접 내려 마셔 보고 나서야 봉투에 담습니다. 맛이 기대와 다르면 그 배치는 내보내지 않습니다.</p>
+      <p>이 홈페이지는 그 기록의 일부입니다. 원두를 고르기 전에, 이 원두가 어떤 과정을 거쳐 왔는지 천천히 읽어 주셨으면 합니다.</p>
+      <p class="sign">로스터 ○○○</p>
+    </div>
+  </section>
+
+  <!-- 02 로스팅 단계 -->
+  <section id="roast">
+    <div class="runhead"><span>느린 불씨 저널</span><span class="sec">02 생두에서 원두까지</span><span class="folio">p.04</span></div>
+    <div class="figure-roast">
+      <div class="rv">
+        <span class="label">Figure 1</span>
+        <h2>초록 씨앗이<br>커피가 되기까지<br>일곱 단계.</h2>
+        <p class="side">색 띠를 눌러 보세요. 단계마다 일어나는 일과, 그 단계에서 불을 멈춘 원두를 함께 적었습니다.</p>
+      </div>
+      <div class="rv">
+        <div class="chips" id="chips" role="group" aria-label="로스팅 단계"></div>
+        <div class="chip-cap" aria-live="polite">
+          <div class="big" id="capName"></div>
+          <p id="capText"></p>
+        </div>
+        <figcaption><b>도판 1.</b> 생두에서 2차 팝까지 원두 색의 변화. 색은 이해를 돕기 위한 근사치입니다.</figcaption>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 원두 -->
+  <section id="beans">
+    <div class="runhead"><span>느린 불씨 저널</span><span class="sec">03 지금 볶는 원두</span><span class="folio">p.06</span></div>
+    <div class="article-head rv">
+      <h2>이번 호의<br>시음 노트.</h2>
+      <p class="deck">지금 볶고 있는 네 가지 원두입니다. 볶은 정도, 맛, 어울리는 추출법을 시음 노트처럼 정리했습니다.</p>
+    </div>
+    <div class="beans">
+      <article class="bean rv">
+        <div class="photo"><img src="https://images.unsplash.com/photo-1790364416838-5a8b04211be3?auto=format&fit=crop&w=700&h=875&q=80" alt="밝게 볶은 원두" loading="lazy"></div>
+        <p class="no">NO. 01</p>
+        <h3>에티오피아 예가체프</h3>
+        <p class="origin">Ethiopia, Yirgacheffe</p>
+        <dl>
+          <div><dt>배전</dt><dd><span class="scale"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>약배전</dd></div>
+          <div><dt>맛</dt><dd>자스민, 레몬, 홍차</dd></div>
+          <div><dt>추출</dt><dd>핸드드립</dd></div>
+        </dl>
+        <p class="note">첫 모금에 꽃향이, 식어 갈수록 홍차 같은 단맛이 남습니다.</p>
+      </article>
+      <article class="bean rv">
+        <div class="photo"><img src="https://images.unsplash.com/photo-1615486825258-2c6e2cd58cb7?auto=format&fit=crop&w=700&h=875&q=80" alt="중간 정도로 볶은 원두" loading="lazy"></div>
+        <p class="no">NO. 02</p>
+        <h3>콜롬비아 수프리모</h3>
+        <p class="origin">Colombia, Supremo</p>
+        <dl>
+          <div><dt>배전</dt><dd><span class="scale"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>중배전</dd></div>
+          <div><dt>맛</dt><dd>밀크초콜릿, 견과, 캐러멜</dd></div>
+          <div><dt>추출</dt><dd>핸드드립, 모카포트</dd></div>
+        </dl>
+        <p class="note">매일 마셔도 질리지 않는 둥글고 편안한 맛입니다.</p>
+      </article>
+      <article class="bean rv">
+        <div class="photo"><img src="https://images.unsplash.com/photo-1783926014847-748a8074eb38?auto=format&fit=crop&w=700&h=875&q=80" alt="진하게 볶은 원두" loading="lazy"></div>
+        <p class="no">NO. 03</p>
+        <h3>과테말라 안티구아</h3>
+        <p class="origin">Guatemala, Antigua</p>
+        <dl>
+          <div><dt>배전</dt><dd><span class="scale"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>중강배전</dd></div>
+          <div><dt>맛</dt><dd>다크초콜릿, 흑설탕, 스모키</dd></div>
+          <div><dt>추출</dt><dd>에스프레소, 라떼</dd></div>
+        </dl>
+        <p class="note">은은한 훈연 향 뒤로 흑설탕 같은 단맛이 길게 이어집니다.</p>
+      </article>
+      <article class="bean rv">
+        <div class="photo"><img src="https://images.unsplash.com/photo-1620820186187-fc32e79adb74?auto=format&fit=crop&w=700&h=875&q=80" alt="아주 진하게 볶은 원두" loading="lazy"></div>
+        <p class="no">NO. 04</p>
+        <h3>느린 불씨 블렌드</h3>
+        <p class="origin">House Blend</p>
+        <dl>
+          <div><dt>배전</dt><dd><span class="scale"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>강배전</dd></div>
+          <div><dt>맛</dt><dd>카카오, 구운 곡물, 묵직한 단맛</dd></div>
+          <div><dt>추출</dt><dd>에스프레소, 라떼</dd></div>
+        </dl>
+        <p class="note">우유와 만나도 맛이 흐려지지 않도록 설계한 블렌드입니다.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 04 사진 에세이 -->
+  <section id="process">
+    <div class="runhead"><span>느린 불씨 저널</span><span class="sec">04 한 봉지가 나오기까지</span><span class="folio">p.08</span></div>
+    <div class="essay">
+      <figure class="e1 rv">
+        <div class="photo"><img src="https://images.unsplash.com/photo-1703646619157-eb553d16d402?auto=format&fit=crop&w=1400&q=80" alt="테이블 위의 생두" loading="lazy"></div>
+        <figcaption><b>사진 1.</b> 고르기. 깨지거나 색이 다른 콩은 볶기 전에 손으로 골라냅니다.</figcaption>
+      </figure>
+      <figure class="e2 rv">
+        <div class="photo"><img src="https://images.unsplash.com/photo-1777383505116-4c736a35ad38?auto=format&fit=crop&w=900&q=80" alt="냉각 트레이에서 식는 원두" loading="lazy"></div>
+        <figcaption><b>사진 2.</b> 볶기. 정한 지점에서 불을 멈추고 곧바로 식혀 향을 붙잡습니다.</figcaption>
+      </figure>
+      <figure class="e3 rv">
+        <div class="photo"><img src="https://images.unsplash.com/photo-1759259639356-7c6e74eed1ec?auto=format&fit=crop&w=1600&q=80" alt="핸드드립으로 커피를 내리는 모습" loading="lazy"></div>
+        <figcaption><b>사진 3.</b> 맛보기. 며칠 쉬게 한 원두를 직접 내려 마셔 본 뒤에야 봉투에 담습니다.</figcaption>
+      </figure>
+      <div class="txt rv">
+        <span class="label">Photo Essay</span>
+        <h3>고르고, 볶고,<br>맛보고, 담는다.</h3>
+        <p>네 단계 중 어느 하나도 건너뛰지 않습니다. 한 봉지의 원두는 이 과정을 모두 거쳐 손님께 갑니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 문답 + 연락 -->
+  <section id="contact">
+    <div class="runhead"><span>느린 불씨 저널</span><span class="sec">05 로스터에게 묻다</span><span class="folio">p.10</span></div>
+    <div class="qa">
+      <div class="rv">
+        <span class="label">Interview</span>
+        <h2>로스터에게<br>묻다.</h2>
+        <p class="who">답변 : 로스터 ○○○<br>(예시 문답입니다)</p>
+      </div>
+      <dl class="rv">
+        <dt>원두는 언제 마시는 게 가장 맛있나요?</dt>
+        <dd>볶은 날로부터 일주일에서 한 달 사이를 권합니다. 봉투에 적힌 로스팅 날짜를 꼭 확인해 주세요.</dd>
+        <dt>어떤 원두부터 시작하면 좋을까요?</dt>
+        <dd>산미가 낯설다면 콜롬비아 수프리모를, 향을 즐기고 싶다면 에티오피아 예가체프를 먼저 권합니다.</dd>
+        <dt>카페나 사무실 납품도 하나요?</dt>
+        <dd>네. 사용하시는 기계와 메뉴를 알려 주시면 맞는 원두와 볶음 정도를 함께 정해 드립니다.</dd>
+      </dl>
+    </div>
+
+    <div class="contact rv">
+      <div>
+        <span class="label">Contact</span>
+        <h2>다음 호를 기다리며,<br>말을 걸어 주세요.</h2>
+        <p>원두 구매, 납품, 로스팅에 대한 질문 모두 반갑습니다.</p>
+      </div>
+      <div class="links">
+        <a href="#contact">카카오톡 채널 <span class="mono">준비 중</span></a>
+        <a href="#contact">인스타그램 <span class="mono">@아이디</span></a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div>
+      <h4>COLOPHON</h4>
+      <p>느린 불씨 저널 Issue No. 01<br>발행 : 느린 불씨 로스터리 (가칭)<br>글 : 로스터 ○○○</p>
+    </div>
+    <div>
+      <h4>BUSINESS</h4>
+      <p>대표 : ○○○<br>사업자등록번호 : 000-00-00000<br>주소 : ○○시 ○○구 ○○로 00</p>
+    </div>
+    <div>
+      <h4>CREDIT</h4>
+      <p>사진 : Unsplash 무료 사진 (Unsplash License)<br>시안 확인용이며 실제 운영 시 직접 촬영한 사진으로 교체를 권장합니다.</p>
+    </div>
+  </footer>
+</main>
+
+<script>
+(function () {
+  /* 나타나기 */
+  var rv = document.querySelectorAll(".rv");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    rv.forEach(function (el) { io.observe(el); });
+  } else { rv.forEach(function (el) { el.classList.add("in"); }); }
+
+  /* 도판 1 : 로스팅 단계 */
+  var stages = [
+    { n: "생두", c: "#9aa57a", t: "아직 커피가 아닙니다. 풀 내음이 나는 단단한 초록 씨앗입니다." },
+    { n: "건조", c: "#c9b27a", t: "수분이 빠지며 노랗게 변하고, 빵 굽는 냄새가 올라옵니다." },
+    { n: "갈변", c: "#b7864f", t: "당이 캐러멜처럼 변하며 단맛의 바탕이 만들어집니다." },
+    { n: "1차 팝", c: "#8a5a34", t: "콩이 탁탁 터지기 시작합니다. 여기서 멈추면 산뜻한 약배전.", m: "NO. 01 에티오피아 예가체프" },
+    { n: "시티", c: "#6b4026", t: "산미와 단맛이 가장 균형을 이루는 지점입니다.", m: "NO. 02 콜롬비아 수프리모" },
+    { n: "풀시티", c: "#4e2d1b", t: "쓴맛과 무게감이 깊어지고 초콜릿 향이 짙어집니다.", m: "NO. 03 과테말라 안티구아" },
+    { n: "2차 팝", c: "#2e1a10", t: "표면에 기름이 배어 나오고 스모키한 향이 피어납니다.", m: "NO. 04 느린 불씨 블렌드" }
+  ];
+  var wrap = document.getElementById("chips");
+  stages.forEach(function (s, i) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip";
+    b.innerHTML = '<span class="sw" style="background:' + s.c + '"></span><span class="no">0' + (i + 1) + '</span><span class="nm">' + s.n + '</span>';
+    b.addEventListener("click", function () { pick(i); });
+    wrap.appendChild(b);
+  });
+  function pick(i) {
+    var s = stages[i];
+    Array.prototype.forEach.call(wrap.children, function (b, k) { b.setAttribute("aria-pressed", String(k === i)); });
+    document.getElementById("capName").textContent = s.n;
+    document.getElementById("capText").innerHTML = s.t + (s.m ? "<br><b>이 단계에서 멈춘 원두 : " + s.m + "</b>" : "");
+    try { localStorage.setItem("editorial-stage", i); } catch (e) {}
+  }
+  var start = 3;
+  try { var v = localStorage.getItem("editorial-stage"); if (v !== null && +v >= 0 && +v <= 6) start = +v; } catch (e) {}
+  pick(start);
+})();
+</script>
+</body>
+</html>
