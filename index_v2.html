@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>느린 불씨 로스터리 (가칭)</title>
 <meta name="description" content="불 앞에서 기다린 만큼 깊어지는 커피. 스몰 배치 커피 로스터리.">
+<meta name="theme-color" content="#000000">
+<!-- 카카오톡, 인스타그램 등에 링크를 보낼 때 뜨는 미리보기 (실제 주소가 생기면 og:url, og:image를 자체 사진으로 교체) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="느린 불씨 로스터리">
+<meta property="og:title" content="느린 불씨. 불 앞에서 기다린 만큼, 깊어집니다.">
+<meta property="og:description" content="한 번에 적은 양만 볶는 스몰 배치 커피 로스터리">
+<meta property="og:image" content="https://images.unsplash.com/photo-1595069007456-aedfdac0ef45?auto=format&fit=crop&w=1200&h=630&q=80">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23000'/%3E%3Cellipse cx='50' cy='50' rx='25' ry='35' transform='rotate(28 50 50)' fill='%23f0a35e'/%3E%3Cpath d='M41 20 C 60 36, 40 60, 60 80' fill='none' stroke='%23000' stroke-opacity='.4' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://images.unsplash.com">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root {
@@ -43,6 +53,28 @@ a { color: inherit; text-decoration: none; }
 .gnav nav a { opacity: .82; transition: opacity .2s; }
 .gnav nav a:hover { opacity: 1; }
 .gnav .cta { background: var(--ember); color: #1a0f07; font-weight: 600; padding: 5px 13px; border-radius: 99px; font-size: 12px; }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* 휴대폰 메뉴 */
+.menu-btn { display: none; position: relative; width: 36px; height: 36px; margin-left: -8px; background: none; border: 0; cursor: pointer; color: #e8e8ed; }
+.menu-btn span { position: absolute; left: 10px; width: 16px; height: 1.5px; background: currentColor; border-radius: 2px; transition: transform .35s cubic-bezier(.2,.7,.2,1), top .35s; }
+.menu-btn span:nth-child(1) { top: 14px; }
+.menu-btn span:nth-child(2) { top: 21px; }
+.menu-btn[aria-expanded="true"] span:nth-child(1) { top: 17.5px; transform: rotate(45deg); }
+.menu-btn[aria-expanded="true"] span:nth-child(2) { top: 17.5px; transform: rotate(-45deg); }
+.mnav {
+  position: fixed; inset: var(--nav-h) 0 0 0; z-index: 99; padding: 22px 34px;
+  background: rgba(22,22,23,.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  display: flex; flex-direction: column; gap: 6px;
+  opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s;
+}
+.mnav.open { opacity: 1; visibility: visible; }
+.mnav a { color: #e8e8ed; font-size: 28px; font-weight: 600; letter-spacing: -.03em; padding: 6px 0; opacity: 0; transform: translateY(-8px); transition: opacity .4s ease, transform .4s ease; }
+.mnav.open a { opacity: 1; transform: none; }
+.mnav.open a:nth-child(2) { transition-delay: .04s; } .mnav.open a:nth-child(3) { transition-delay: .08s; }
+.mnav.open a:nth-child(4) { transition-delay: .12s; } .mnav.open a:nth-child(5) { transition-delay: .16s; }
+body.menu-open { overflow: hidden; }
 
 .ribbon { background: var(--mist); color: var(--ink); text-align: center; font-size: 13px; padding: 11px 16px; }
 
@@ -132,9 +164,45 @@ a { color: inherit; text-decoration: none; }
 .lineup { padding: clamp(90px, 12vw, 150px) 0; }
 .lineup-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(16px, 2.4vw, 32px); margin-top: clamp(44px, 6vw, 70px); }
 .bean { text-align: center; }
-.bean .shot { aspect-ratio: 1; border-radius: 24px; overflow: hidden; background: var(--mist); }
-.bean .shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
-.bean:hover .shot img { transform: scale(1.06); }
+.bean .shot {
+  container-type: inline-size;
+  position: relative; aspect-ratio: 1; border-radius: 24px; overflow: hidden;
+  background: radial-gradient(70% 60% at 50% 38%, #fff, var(--mist) 70%);
+  display: grid; place-items: center;
+}
+.bean .shot::after { /* 바닥 그림자 */
+  content: ""; position: absolute; left: 26%; right: 26%; bottom: 11%; height: 7%;
+  background: radial-gradient(closest-side, rgba(0,0,0,.28), transparent); filter: blur(4px);
+  transition: transform .8s cubic-bezier(.2,.7,.2,1), opacity .8s;
+}
+/* 원두 봉투 시안 (실제 패키지 사진이 생기면 img로 교체) */
+.bag {
+  position: relative; z-index: 1; width: 56%; aspect-ratio: 3 / 4.3; margin-top: -4%;
+  background: linear-gradient(90deg, #121110 0%, #262320 22%, #1d1b18 55%, #2a2622 82%, #121110 100%);
+  border-radius: 4px 4px 9px 9px;
+  box-shadow: inset 0 -10px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.bag::before { /* 윗부분 접합선 */
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 9%;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 2px, transparent 2px 5px), #1a1816;
+  border-bottom: 1px solid rgba(255,255,255,.06); border-radius: 4px 4px 0 0;
+}
+.bag::after { /* 원두 향 밸브 */
+  content: ""; position: absolute; top: 15%; left: 50%; width: 9%; aspect-ratio: 1; transform: translateX(-50%);
+  border-radius: 50%; background: #0d0c0b; box-shadow: 0 0 0 2px rgba(255,255,255,.05);
+}
+.lb {
+  position: absolute; left: 7%; right: 7%; top: 30%; bottom: 12%;
+  background: #f4efe6; color: #1d1d1f; padding: 9% 5% 7%; white-space: nowrap;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.lb-brand { font-size: 3.2cqw; font-weight: 700; letter-spacing: .22em; color: var(--ember-deep); }
+.lb-name { margin-top: auto; font-size: 4.6cqw; font-weight: 800; letter-spacing: -.01em; line-height: 1.25; }
+.lb-band { width: 100%; height: 5px; margin: 9% 0 7%; background: var(--roast); }
+.lb-meta { font-size: 2.9cqw; letter-spacing: .14em; color: #6e6e73; font-weight: 600; }
+.bean:hover .bag { transform: translateY(-6px) rotate(-2deg); }
+.bean:hover .shot::after { transform: scaleX(.9); opacity: .7; }
 .bean .origin { margin: 22px 0 2px; font-size: 13px; font-weight: 600; color: var(--ember-deep); letter-spacing: .02em; }
 .bean h3 { font-size: clamp(20px, 1.9vw, 24px); font-weight: 700; letter-spacing: -.03em; margin: 0 0 14px; line-height: 1.25; }
 .dots { display: flex; justify-content: center; gap: 6px; }
@@ -188,6 +256,8 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 760px) {
   .gnav nav { display: none; }
+  .menu-btn { display: block; }
+  .gnav .brand { position: absolute; left: 50%; transform: translateX(-50%); }
   .tiles { grid-template-columns: 1fr; }
   .roast-stage { grid-template-columns: 1fr; }
   .bean-view { max-width: 300px; margin: 0 auto; width: 100%; }
@@ -203,6 +273,11 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 420px) {
   .lineup-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .bag { width: 64%; }
+  .lb-name { font-size: 6cqw; }
+  .lb-brand { font-size: 4cqw; }
+  .lb-meta { display: none; }
+  .lb-band { margin-bottom: 0; }
   .bean .shot { border-radius: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -225,6 +300,7 @@ a { color: inherit; text-decoration: none; }
 
 <header class="gnav">
   <div class="wrap">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mnav"><span></span><span></span></button>
     <a class="brand" href="#top"><svg aria-hidden="true"><use href="#bean"/></svg>느린 불씨</a>
     <nav aria-label="주요 메뉴">
       <a href="#story">이야기</a>
@@ -235,6 +311,13 @@ a { color: inherit; text-decoration: none; }
     <a class="cta" href="#contact">문의하기</a>
   </div>
 </header>
+<nav class="mnav" id="mnav" aria-label="휴대폰 메뉴" aria-hidden="true">
+  <a href="#story">이야기</a>
+  <a href="#roast">로스팅</a>
+  <a href="#beans">원두</a>
+  <a href="#process">과정</a>
+  <a href="#contact">문의하기</a>
+</nav>
 
 <div class="ribbon">시안 미리보기 : 브랜드 이름, 문구, 원두 정보는 임시이며 사진은 Unsplash 무료 사진입니다.</div>
 
@@ -249,7 +332,7 @@ a { color: inherit; text-decoration: none; }
       <div class="links"><a href="#story">더 알아보기</a><a href="#beans">원두 보기</a></div>
     </div>
     <div class="hero-media">
-      <img id="heroImg" src="https://images.unsplash.com/photo-1595069007456-aedfdac0ef45?auto=format&fit=crop&w=2200&q=80" alt="어두운 바탕 위에 놓인 볶은 커피 원두">
+      <img id="heroImg" fetchpriority="high" src="https://images.unsplash.com/photo-1595069007456-aedfdac0ef45?auto=format&fit=crop&w=2200&q=80" srcset="https://images.unsplash.com/photo-1595069007456-aedfdac0ef45?auto=format&fit=crop&w=900&q=80 900w, https://images.unsplash.com/photo-1595069007456-aedfdac0ef45?auto=format&fit=crop&w=1500&q=80 1500w, https://images.unsplash.com/photo-1595069007456-aedfdac0ef45?auto=format&fit=crop&w=2200&q=80 2200w" sizes="100vw" alt="어두운 바탕 위에 놓인 볶은 커피 원두">
     </div>
   </section>
 
@@ -290,7 +373,7 @@ a { color: inherit; text-decoration: none; }
             <div class="match" id="stageMatch"></div>
           </div>
           <div class="slider">
-            <label for="roastRange" class="sr" style="position:absolute;left:-9999px">로스팅 단계 조절</label>
+            <label for="roastRange" class="sr">로스팅 단계 조절</label>
             <input id="roastRange" type="range" min="0" max="6" step="1" value="0">
             <div class="ticks" id="ticks"></div>
           </div>
@@ -344,7 +427,7 @@ a { color: inherit; text-decoration: none; }
     <div class="wide">
       <div class="lineup-grid">
         <article class="bean rv">
-          <div class="shot"><img src="https://images.unsplash.com/photo-1790364416838-5a8b04211be3?auto=format&fit=crop&w=800&h=800&q=80" alt="밝은 갈색으로 볶은 원두" loading="lazy"></div>
+          <div class="shot" style="--roast:#8a5a34"><div class="bag" role="img" aria-label="에티오피아 예가체프 원두 봉투 시안"><div class="lb"><span class="lb-brand">느린 불씨</span><span class="lb-name">ETHIOPIA<br>YIRGACHEFFE</span><span class="lb-band"></span><span class="lb-meta">200G  LIGHT</span></div></div></div>
           <p class="origin">ETHIOPIA</p>
           <h3>에티오피아<br>예가체프</h3>
           <div class="dots" aria-label="로스팅 정도 5단계 중 2"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
@@ -353,7 +436,7 @@ a { color: inherit; text-decoration: none; }
           <p class="brew">핸드드립 추천</p>
         </article>
         <article class="bean rv d1">
-          <div class="shot"><img src="https://images.unsplash.com/photo-1615486825258-2c6e2cd58cb7?auto=format&fit=crop&w=800&h=800&q=80" alt="중간 정도로 볶은 원두" loading="lazy"></div>
+          <div class="shot" style="--roast:#6b4026"><div class="bag" role="img" aria-label="콜롬비아 수프리모 원두 봉투 시안"><div class="lb"><span class="lb-brand">느린 불씨</span><span class="lb-name">COLOMBIA<br>SUPREMO</span><span class="lb-band"></span><span class="lb-meta">200G  MEDIUM</span></div></div></div>
           <p class="origin">COLOMBIA</p>
           <h3>콜롬비아<br>수프리모</h3>
           <div class="dots" aria-label="로스팅 정도 5단계 중 3"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
@@ -362,7 +445,7 @@ a { color: inherit; text-decoration: none; }
           <p class="brew">핸드드립, 모카포트 추천</p>
         </article>
         <article class="bean rv d2">
-          <div class="shot"><img src="https://images.unsplash.com/photo-1783926014847-748a8074eb38?auto=format&fit=crop&w=800&h=800&q=80" alt="진하게 볶은 원두" loading="lazy"></div>
+          <div class="shot" style="--roast:#4e2d1b"><div class="bag" role="img" aria-label="과테말라 안티구아 원두 봉투 시안"><div class="lb"><span class="lb-brand">느린 불씨</span><span class="lb-name">GUATEMALA<br>ANTIGUA</span><span class="lb-band"></span><span class="lb-meta">200G  MEDIUM DARK</span></div></div></div>
           <p class="origin">GUATEMALA</p>
           <h3>과테말라<br>안티구아</h3>
           <div class="dots" aria-label="로스팅 정도 5단계 중 4"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
@@ -371,7 +454,7 @@ a { color: inherit; text-decoration: none; }
           <p class="brew">에스프레소, 라떼 추천</p>
         </article>
         <article class="bean rv d3">
-          <div class="shot"><img src="https://images.unsplash.com/photo-1620820186187-fc32e79adb74?auto=format&fit=crop&w=800&h=800&q=80" alt="아주 진하게 볶은 원두" loading="lazy"></div>
+          <div class="shot" style="--roast:#2e1a10"><div class="bag" role="img" aria-label="느린 불씨 블렌드 원두 봉투 시안"><div class="lb"><span class="lb-brand">느린 불씨</span><span class="lb-name">HOUSE<br>BLEND</span><span class="lb-band"></span><span class="lb-meta">200G  DARK</span></div></div></div>
           <p class="origin">HOUSE BLEND</p>
           <h3>느린 불씨<br>블렌드</h3>
           <div class="dots" aria-label="로스팅 정도 5단계 중 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
@@ -449,6 +532,20 @@ a { color: inherit; text-decoration: none; }
 <script>
 (function () {
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* 휴대폰 메뉴 */
+  var btn = document.getElementById("menuBtn"), mnav = document.getElementById("mnav");
+  function setMenu(open) {
+    btn.setAttribute("aria-expanded", String(open));
+    btn.setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
+    mnav.classList.toggle("open", open);
+    mnav.setAttribute("aria-hidden", String(!open));
+    document.body.classList.toggle("menu-open", open);
+  }
+  btn.addEventListener("click", function () { setMenu(btn.getAttribute("aria-expanded") !== "true"); });
+  mnav.addEventListener("click", function (e) { if (e.target.tagName === "A") setMenu(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
+  window.addEventListener("resize", function () { if (window.innerWidth > 760) setMenu(false); });
 
   /* 나타나기 */
   var rv = document.querySelectorAll(".rv");
