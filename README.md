@@ -2,7 +2,9 @@
 
 스몰 배치 커피 로스터리 홈페이지 시안입니다. 브랜드 이름 "느린 불씨"는 가칭이며, 문구와 원두 정보, 사업자 정보는 임시입니다.
 
-공개 주소 : https://homemate160.github.io/coffee-roastery-homepage/
+공개 주소 : https://coffee-roastery-homepage.vercel.app/ (Vercel, GitHub main에 올리면 자동 배포)
+
+보조 주소 : https://homemate160.github.io/coffee-roastery-homepage/ (GitHub Pages)
 
 ## 파일
 
