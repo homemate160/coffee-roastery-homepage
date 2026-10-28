@@ -12,6 +12,9 @@
 // 알림을 받을 메일 주소. 비워 두면 이 시트를 만든 구글 계정 메일로 받습니다.
 var NOTIFY_EMAIL = '';
 
+// 문의를 저장할 구글 시트의 ID (시트 주소의 /d/ 와 /edit 사이 글자). 시트 안에서 Apps Script를 열었다면 비워 둬도 됩니다.
+var SHEET_ID = '';
+
 // 문의가 쌓일 탭 이름
 var SHEET_NAME = '문의';
 
@@ -111,7 +114,7 @@ function 처음_설정() {
 /* ---------- 아래는 내부에서 쓰는 도구입니다. 고치지 않아도 됩니다. ---------- */
 
 function getSheet_() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = ss_();
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
@@ -127,7 +130,7 @@ function getSheet_() {
 
 function sendNotice_(name, phone, email, message) {
   var to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
-  var sheetUrl = SpreadsheetApp.getActiveSpreadsheet().getUrl();
+  var sheetUrl = ss_().getUrl();
   var body =
     '홈페이지로 새 문의가 들어왔습니다.\n\n' +
     '성함 : ' + name + '\n' +
@@ -143,11 +146,16 @@ function sendNotice_(name, phone, email, message) {
 // 문의가 한꺼번에 몰릴 때 개별 메일 대신 한 번만 보내는 알림
 function sendBurstNotice_() {
   var to = NOTIFY_EMAIL || Session.getEffectiveUser().getEmail();
-  var sheetUrl = SpreadsheetApp.getActiveSpreadsheet().getUrl();
+  var sheetUrl = ss_().getUrl();
   MailApp.sendEmail(to, '[홈페이지 문의] 문의가 몰리고 있습니다',
     '지난 한 시간 동안 문의가 ' + HOURLY_MAIL_LIMIT + '건을 넘었습니다.\n' +
     '메일함이 가득 차지 않도록 이번 시간에는 개별 알림을 멈춥니다. 문의는 시트에 계속 저장됩니다.\n\n' +
     '시트에서 확인하기 : ' + sheetUrl + '\n', { name: '홈페이지 문의 알림' });
+}
+
+// 문의를 저장할 시트를 엽니다.
+function ss_() {
+  return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
 }
 
 // 연락처나 내용을 짧은 열쇠 문자로 바꿉니다. (원문은 저장하지 않음)
