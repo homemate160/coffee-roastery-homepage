@@ -743,10 +743,10 @@ body.menu-open { overflow: hidden; }
   }
   steps[0].classList.add("on");
 
-  /* 문의 양식 : Web3Forms로 사장님 메일에 전달
-     아래 ACCESS_KEY에 web3forms.com에서 메일로 받은 키를 넣으면 실제로 전송됩니다.
-     키가 비어 있으면 아무것도 보내지 않고 "준비 중" 안내만 띄웁니다. */
-  var ACCESS_KEY = "";
+  /* 문의 양식 : 구글 스프레드시트에 한 줄 추가 + 사장님 메일로 알림
+     google_sheet 폴더의 안내대로 Apps Script를 배포한 뒤 받은 "웹 앱 URL"을 아래에 넣으면 실제로 전송됩니다.
+     비어 있으면 아무것도 보내지 않고 "준비 중" 안내만 띄웁니다. */
+  var ENDPOINT = "";
   var form = document.getElementById("qform");
   var f = {
     name: document.getElementById("qName"), phone: document.getElementById("qPhone"),
@@ -788,29 +788,21 @@ body.menu-open { overflow: hidden; }
     var problem = check();
     if (problem) { say(problem, "err"); return; }
     if (f.bot.checked) return; /* 자동 등록 프로그램 차단 */
-    if (!ACCESS_KEY) { say("지금은 시안이라 메일 연결 전입니다. 아래 카카오톡이나 인스타그램으로 문의해 주세요.", "err"); return; }
+    if (!ENDPOINT) { say("지금은 시안이라 문의 접수 연결 전입니다. 아래 카카오톡이나 인스타그램으로 문의해 주세요.", "err"); return; }
 
     sendBtn.disabled = true; sendBtn.textContent = "보내는 중";
     say("");
-    var body = {
-      access_key: ACCESS_KEY,
-      subject: "[홈페이지 문의] " + f.name.value.trim() + " 님",
-      from_name: "느린 불씨 홈페이지",
-      "성함": f.name.value.trim(),
-      "연락처": f.phone.value.trim() || "(적지 않음)",
-      "메일 주소": f.email.value.trim() || "(적지 않음)",
-      "문의 내용": f.msg.value.trim(),
-      botcheck: false
-    };
-    if (f.email.value.trim()) body.replyto = f.email.value.trim();
+    /* 일반 양식 형식으로 보내야 구글 쪽에서 막히지 않고 받습니다 */
+    var body = new URLSearchParams();
+    body.append("name", f.name.value.trim());
+    body.append("phone", f.phone.value.trim());
+    body.append("email", f.email.value.trim());
+    body.append("message", f.msg.value.trim());
 
-    fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(body)
-    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok && j.success, j: j }; }); })
+    fetch(ENDPOINT, { method: "POST", body: body })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok && j.ok, j: j }; }); })
       .then(function (res) {
-        if (!res.ok) throw new Error((res.j && res.j.message) || "send failed");
+        if (!res.ok) throw new Error((res.j && res.j.error) || "send failed");
         try { localStorage.removeItem(DRAFT); } catch (e) {}
         form.reset(); count.textContent = "0";
         document.getElementById("qfields").hidden = true;
