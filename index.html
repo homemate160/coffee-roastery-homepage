@@ -231,6 +231,53 @@ body.menu-open { overflow: hidden; }
 .contact { padding: clamp(100px, 14vw, 170px) 0; }
 .contact p.lead { color: var(--gray); font-size: clamp(17px, 1.6vw, 21px); margin: 18px 0 30px; }
 .contact .btns { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.contact .or { color: var(--gray); font-size: 14px; margin: 44px 0 16px; }
+
+/* 문의 양식 */
+.qform {
+  max-width: 640px; margin: 0 auto; text-align: left;
+  background: var(--white); border-radius: 28px; padding: clamp(26px, 5vw, 48px);
+  box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 18px 50px -24px rgba(0,0,0,.18);
+}
+.qform .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; }
+.qform .full { grid-column: 1 / -1; }
+.qform label.f { display: block; font-size: 14px; font-weight: 600; color: var(--ink); margin: 0 0 7px; }
+.qform label.f em { font-style: normal; font-weight: 500; color: var(--ember-deep); margin-left: 4px; font-size: 12px; }
+.qform input[type=text], .qform input[type=tel], .qform input[type=email], .qform textarea {
+  width: 100%; font: inherit; font-size: 17px; color: var(--ink);
+  background: #fbfbfd; border: 1px solid #d2d2d7; border-radius: 12px; padding: 13px 15px;
+  transition: border-color .2s, box-shadow .2s, background-color .2s;
+  -webkit-appearance: none; appearance: none;
+}
+.qform textarea { min-height: 150px; resize: vertical; line-height: 1.55; }
+.qform input::placeholder, .qform textarea::placeholder { color: #a1a1a6; }
+.qform input:focus, .qform textarea:focus { outline: none; border-color: var(--ember-deep); background: #fff; box-shadow: 0 0 0 4px rgba(181,96,43,.14); }
+.qform .bad { border-color: #d70015 !important; box-shadow: 0 0 0 4px rgba(215,0,21,.1) !important; }
+.qform .count { text-align: right; font-size: 12px; color: var(--gray); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.qform .agree { margin-top: 22px; padding-top: 20px; border-top: 1px solid #e8e8ed; font-size: 14px; color: #424245; }
+.qform .agree label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.qform .agree input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--ember-deep); flex: none; }
+.qform details { margin: 10px 0 0 30px; font-size: 13px; color: var(--gray); }
+.qform summary { cursor: pointer; color: var(--ember-deep); width: max-content; }
+.qform details ul { margin: 8px 0 0; padding-left: 18px; line-height: 1.75; }
+.qform .send {
+  display: block; width: 100%; margin-top: 24px; border: 0; cursor: pointer;
+  font: inherit; font-size: 17px; font-weight: 600; color: #fff; background: var(--ember-deep);
+  padding: 15px 24px; border-radius: 14px; transition: transform .15s, background-color .2s, opacity .2s;
+}
+.qform .send:hover { background: #a1531f; }
+.qform .send:active { transform: scale(.985); }
+.qform .send[disabled] { opacity: .55; cursor: default; }
+.qform .msg { min-height: 1.6em; margin: 14px 0 0; font-size: 14px; text-align: center; }
+.qform .msg.err { color: #d70015; }
+.qform .msg.ok { color: #1d7a3a; }
+.qform .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.qdone { text-align: center; padding: 30px 0 10px; }
+.qdone svg { width: 54px; height: 54px; color: var(--ember-deep); }
+.qdone h3 { font-size: 26px; letter-spacing: -.03em; margin: 14px 0 8px; }
+.qdone p { color: var(--gray); margin: 0 0 22px; }
+.qdone button { font: inherit; font-size: 15px; color: var(--ember-deep); background: none; border: 0; cursor: pointer; }
+@media (max-width: 560px) { .qform .grid { grid-template-columns: 1fr; } }
 
 /* ---------- 바닥글 ---------- */
 .foot { background: var(--mist); color: #6e6e73; font-size: 12px; line-height: 1.7; padding: 22px 0 34px; }
@@ -505,8 +552,55 @@ body.menu-open { overflow: hidden; }
   <section id="contact" class="contact mist center">
     <div class="wrap">
       <h2 class="h-lg rv">원두가 궁금하다면,<br>말을 걸어 주세요.</h2>
-      <p class="lead rv d1">원두 구매, 카페와 사무실 납품, 로스팅에 대한 질문 모두 반갑습니다.</p>
-      <div class="btns rv d2">
+      <p class="lead rv d1">원두 구매, 카페와 사무실 납품, 로스팅에 대한 질문 모두 반갑습니다.<br>남겨 주신 연락처로 직접 답장드립니다.</p>
+
+      <form class="qform rv d2" id="qform" novalidate>
+        <div id="qfields">
+          <div class="grid">
+            <div>
+              <label class="f" for="qName">성함<em>필수</em></label>
+              <input type="text" id="qName" name="name" autocomplete="name" maxlength="40" placeholder="홍길동">
+            </div>
+            <div>
+              <label class="f" for="qPhone">연락처</label>
+              <input type="tel" id="qPhone" name="phone" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="010-0000-0000">
+            </div>
+            <div class="full">
+              <label class="f" for="qEmail">메일 주소</label>
+              <input type="email" id="qEmail" name="email" autocomplete="email" maxlength="80" placeholder="name@example.com">
+            </div>
+            <div class="full">
+              <label class="f" for="qMsg">문의 내용<em>필수</em></label>
+              <textarea id="qMsg" name="message" maxlength="2000" placeholder="궁금한 원두, 필요한 양, 납품 문의 등 편하게 적어 주세요."></textarea>
+              <div class="count"><span id="qCount">0</span> / 2000</div>
+            </div>
+          </div>
+          <label class="hp" aria-hidden="true">비워 두세요<input type="checkbox" name="botcheck" id="qBot" tabindex="-1"></label>
+          <div class="agree">
+            <label><input type="checkbox" id="qAgree"><span>개인정보 수집 및 이용에 동의합니다. <em style="font-style:normal;color:var(--ember-deep);font-size:12px">필수</em></span></label>
+            <details>
+              <summary>자세히 보기</summary>
+              <ul>
+                <li>수집 항목 : 성함, 연락처, 메일 주소, 문의 내용</li>
+                <li>이용 목적 : 문의에 대한 답변</li>
+                <li>보관 기간 : 답변 완료 후 1년 뒤 삭제</li>
+                <li>동의하지 않으실 수 있으나, 이 경우 양식으로 문의하실 수 없습니다.</li>
+              </ul>
+            </details>
+          </div>
+          <button class="send" type="submit" id="qSend">보내기</button>
+          <p class="msg" id="qMsgBox" role="status" aria-live="polite"></p>
+        </div>
+        <div class="qdone" id="qDone" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+          <h3>문의가 전달되었습니다.</h3>
+          <p>확인하는 대로 남겨 주신 연락처로 답장드리겠습니다.</p>
+          <button type="button" id="qAgain">새 문의 쓰기</button>
+        </div>
+      </form>
+
+      <p class="or rv">또는</p>
+      <div class="btns rv">
         <a class="pill fill" href="#contact">카카오톡 채널 (준비 중)</a>
         <a class="pill line" href="#contact">인스타그램</a>
       </div>
@@ -648,6 +742,92 @@ body.menu-open { overflow: hidden; }
     steps.forEach(function (s) { io2.observe(s); });
   }
   steps[0].classList.add("on");
+
+  /* 문의 양식 : Web3Forms로 사장님 메일에 전달
+     아래 ACCESS_KEY에 web3forms.com에서 메일로 받은 키를 넣으면 실제로 전송됩니다.
+     키가 비어 있으면 아무것도 보내지 않고 "준비 중" 안내만 띄웁니다. */
+  var ACCESS_KEY = "";
+  var form = document.getElementById("qform");
+  var f = {
+    name: document.getElementById("qName"), phone: document.getElementById("qPhone"),
+    email: document.getElementById("qEmail"), msg: document.getElementById("qMsg"),
+    agree: document.getElementById("qAgree"), bot: document.getElementById("qBot")
+  };
+  var box = document.getElementById("qMsgBox"), sendBtn = document.getElementById("qSend");
+  var count = document.getElementById("qCount");
+  var DRAFT = "roastery-inquiry-draft";
+
+  function say(text, kind) { box.textContent = text; box.className = "msg" + (kind ? " " + kind : ""); }
+  function mark(el, bad) { el.classList.toggle("bad", bad); el.setAttribute("aria-invalid", String(bad)); }
+  function saveDraft() {
+    try { localStorage.setItem(DRAFT, JSON.stringify({ n: f.name.value, p: f.phone.value, e: f.email.value, m: f.msg.value })); } catch (e) {}
+  }
+  try {
+    var d = JSON.parse(localStorage.getItem(DRAFT) || "null");
+    if (d) { f.name.value = d.n || ""; f.phone.value = d.p || ""; f.email.value = d.e || ""; f.msg.value = d.m || ""; }
+  } catch (e) {}
+  count.textContent = f.msg.value.length;
+  [f.name, f.phone, f.email, f.msg].forEach(function (el) {
+    el.addEventListener("input", function () { mark(el, false); if (el === f.msg) count.textContent = el.value.length; saveDraft(); });
+  });
+
+  function check() {
+    var name = f.name.value.trim(), phone = f.phone.value.trim(), email = f.email.value.trim(), msg = f.msg.value.trim();
+    [f.name, f.phone, f.email, f.msg].forEach(function (el) { mark(el, false); });
+    if (!name) { mark(f.name, true); f.name.focus(); return "성함을 적어 주세요."; }
+    if (!phone && !email) { mark(f.phone, true); mark(f.email, true); f.phone.focus(); return "답장받으실 연락처나 메일 주소 중 하나는 꼭 적어 주세요."; }
+    if (phone && !/^[0-9+\-\s()]{8,20}$/.test(phone)) { mark(f.phone, true); f.phone.focus(); return "연락처는 숫자와 - 만 써서 적어 주세요."; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { mark(f.email, true); f.email.focus(); return "메일 주소 형식을 확인해 주세요."; }
+    if (msg.length < 5) { mark(f.msg, true); f.msg.focus(); return "문의 내용을 조금 더 적어 주세요."; }
+    if (!f.agree.checked) { f.agree.focus(); return "개인정보 수집 및 이용에 동의해 주세요."; }
+    return "";
+  }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var problem = check();
+    if (problem) { say(problem, "err"); return; }
+    if (f.bot.checked) return; /* 자동 등록 프로그램 차단 */
+    if (!ACCESS_KEY) { say("지금은 시안이라 메일 연결 전입니다. 아래 카카오톡이나 인스타그램으로 문의해 주세요.", "err"); return; }
+
+    sendBtn.disabled = true; sendBtn.textContent = "보내는 중";
+    say("");
+    var body = {
+      access_key: ACCESS_KEY,
+      subject: "[홈페이지 문의] " + f.name.value.trim() + " 님",
+      from_name: "느린 불씨 홈페이지",
+      "성함": f.name.value.trim(),
+      "연락처": f.phone.value.trim() || "(적지 않음)",
+      "메일 주소": f.email.value.trim() || "(적지 않음)",
+      "문의 내용": f.msg.value.trim(),
+      botcheck: false
+    };
+    if (f.email.value.trim()) body.replyto = f.email.value.trim();
+
+    fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok && j.success, j: j }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error((res.j && res.j.message) || "send failed");
+        try { localStorage.removeItem(DRAFT); } catch (e) {}
+        form.reset(); count.textContent = "0";
+        document.getElementById("qfields").hidden = true;
+        document.getElementById("qDone").hidden = false;
+      })
+      .catch(function () {
+        say("전송하지 못했습니다. 잠시 뒤 다시 시도하시거나 아래 카카오톡으로 문의해 주세요. 적으신 내용은 그대로 남아 있습니다.", "err");
+      })
+      .then(function () { sendBtn.disabled = false; sendBtn.textContent = "보내기"; });
+  });
+
+  document.getElementById("qAgain").addEventListener("click", function () {
+    document.getElementById("qDone").hidden = true;
+    document.getElementById("qfields").hidden = false;
+    say("");
+    f.name.focus();
+  });
 })();
 </script>
 </body>
