@@ -4,8 +4,6 @@
 
 공개 주소 : https://coffee-roastery-homepage.vercel.app/ (Vercel, GitHub main에 올리면 자동 배포)
 
-보조 주소 : https://homemate160.github.io/coffee-roastery-homepage/ (GitHub Pages)
-
 ## 파일
 
 | 파일 | 내용 |
